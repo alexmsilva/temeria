@@ -50,4 +50,13 @@ contract("Temeria", accounts => {
         assert.equal(await temeria.marquis(), thirdAccount);
         assert.equal(await temeria.earl(), secondAccount);
     });
+
+    it("should reward other accounts after a new King", async () => {
+        let budget = await temeria.getKingValue();
+        let firstAccountBalance = await web3.eth.getBalance(firstAccount); // returns a bigNumber
+        await temeria.beTheKing({from: secondAccount, value: web3.toWei(1, "ether")});
+        let expectedBalance = firstAccountBalance.toNumber() + (budget/2);
+        let currentBalance = await web3.eth.getBalance(firstAccount);
+        assert.equal(expectedBalance, currentBalance.toNumber());
+    });
 });

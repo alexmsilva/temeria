@@ -31,9 +31,21 @@ contract Temeria {
         return position;
     }
 
+    function distributeReward(uint256 _budget) private {
+        uint256 currentBudget = _budget;
+        for (uint index = 0; index < titles.length; index++) {
+            if (titles[index].account == 0x0) {
+                continue;
+            }
+            currentBudget = currentBudget/2;
+            titles[index].account.transfer(currentBudget);
+        }
+    }
+
     function beTheKing() public payable {
         require(msg.value > titles[0].value, "Low amount to be King");
 
+        distributeReward(titles[0].value);
         uint position = checkPositionByAccount(msg.sender);
         shiftPositions(position);
         titles[0] = Title({account: msg.sender, value: msg.value});
